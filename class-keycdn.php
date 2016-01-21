@@ -1,6 +1,6 @@
 <?php
 function keycdn_flush_urls( $urls = array() ) {
-    error_log( '--- KeyCDN Flush URL Hook ---' );
+    // error_log( '--- KeyCDN Flush URL Hook ---' );
     if( !$urls ) {
         return;
     }
@@ -38,10 +38,6 @@ function keycdn_flush_urls( $urls = array() ) {
 		'cookies' => array(),
     );
 
-
-    error_log( print_r( $urls, TRUE ) );
-    return;
-
     $response = wp_remote_post( $request_url, $args );
 
     if( is_wp_error( $response ) ) {
@@ -50,3 +46,10 @@ function keycdn_flush_urls( $urls = array() ) {
 
 }
 add_action( 'cdn_integration_flush_urls', 'keycdn_flush_urls' );
+
+function keycdn_wp() {
+    if( isset( $_SERVER['HTTP_X-PULL'] ) && $_SERVER['HTTP_X-PULL'] == 'KeyCDN' ) {
+        remove_action( 'template_redirect', 'redirect_canonical' );
+    }
+}
+add_action( 'wp', 'keycdn_wp' );
