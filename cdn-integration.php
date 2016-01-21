@@ -12,6 +12,14 @@ if( is_admin() ) {
     include 'class-cdn-integration.php';
 }
 
+$options = get_cdn_integration_options();
+$cdn_integration_plugin_dir_path = plugin_dir_path( __FILE__ );
+$cdn_provider = $options['cdn-provider'];
+$cdn_provider_include = $cdn_integration_plugin_dir_path . 'class-' . $cdn_provider . '.php';
+if( $cdn_provider && file_exists( $cdn_provider_include ) ) {
+    include $cdn_provider_include;
+}
+
 function cdn_integration_add_last_modified_header() {
     $post = get_post();
     if( isset($post) && is_singular() ) {

@@ -4,7 +4,7 @@ class CDN_Integration {
 
 	public function __construct() {
 		$this->plugin_dir_path = plugin_dir_path( __FILE__ );
-		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ), 10, 2 );
+		add_action( 'plugins_loaded', array( $this, 'load_async_library' ), 10, 2 );
 
 		add_action( 'wp_async_wp_delete_file', array( $this, 'wp_delete_file' ), 20, 1 ); // $orig_path
 		add_action( 'wp_async_post_updated', array( $this, 'post_updated' ), 20, 3 );
@@ -35,16 +35,6 @@ class CDN_Integration {
 		include $this->plugin_dir_path . 'async-hooks/class-pre-delete-term.php';
 	}
 
-	public function plugins_loaded() {
-		$this->load_async_library();
-
-		$options = get_cdn_integration_options();
-		$cdn_provider = $options['cdn-provider'];
-		if( $cdn_provider && file_exists( $this->plugin_dir_path . 'class-' . $cdn_provider . '.php' ) ) {
-			include $this->plugin_dir_path. 'class-' . $cdn_provider . '.php';
-		}
-	}
-
 	public function flush_urls( $urls = '' ) {
 		if( !$urls ) {
 			return;
@@ -71,8 +61,8 @@ class CDN_Integration {
 	}
     public function update_post( $post_id = 0 ) {
         $post_id = intval( $post_id );
-        error_log( '--- Update Post ---' );
-        error_log( 'post_id: ' . $post_id );
+        // error_log( '--- Update Post ---' );
+        // error_log( 'post_id: ' . $post_id );
         if( !$post_id ) {
             return;
         }
@@ -96,40 +86,28 @@ class CDN_Integration {
         // $urls = array( trailingslashit( 'http://' . ecf_get_primary_domain() ), get_bloginfo('rss2_url') );
         $urls = array();
         $urls[] = get_permalink( $post );
-        error_log( 'Permalink: ' . $urls[0] );
+        // error_log( 'Permalink: ' . $urls[0] );
 
     	$taxonomies = get_taxonomies( array( 'public' => true ) );
     	$terms = wp_get_object_terms( $post_id, $taxonomies );
     	foreach( $terms as $term ) {
     		$urls[] = get_term_link( $term );
-            error_log( 'Term link: ' . get_term_link( $term ) );
+            // error_log( 'Term link: ' . get_term_link( $term ) );
     	}
     	$this->flush_urls( $urls );
     }
 
 	public function update_media( $post_id = 0 ) {
-		error_log( '--- Update Media ---' );
-		error_log( 'post_id: ' . $post_id );
+		// error_log( '--- Update Media ---' );
+		// error_log( 'post_id: ' . $post_id );
 
 		if( $post_id = intval( $post_id ) ) {
             $this->update_post( $post_id );
         }
 	}
 
-	public function update_file( $orig_path ) {
-		error_log( '--- Update File ---' );
-		error_log( 'orig_path: ' . $orig_path );
-		$uploads = wp_upload_dir();
-		$path = preg_replace('/' . preg_quote($uploads['basedir'], '/') . '/i', '', $orig_path);
-
-		// Transform it from an absolute path to a relative path.
-		$urls = array( $uploads['baseurl'] . $path );
-		error_log( $uploads['baseurl'] . $path );
-		// ecf_flush( $urls );
-	}
-
 	public function wp_delete_file( $orig_path = '' ) {
-		error_log( '--- WP Delete File ---' );
+		// error_log( '--- WP Delete File ---' );
 		$uploads = wp_upload_dir();
 		$path = preg_replace('/' . preg_quote($uploads['basedir'], '/') . '/i', '', $orig_path);
 
@@ -142,8 +120,8 @@ class CDN_Integration {
 	}
 
 	public function transition_comment_status( $post_id = 0 ) {
-		error_log( '--- Transition Comment Status ---' );
-		error_log( 'post_id: ' . $post_id );
+		// error_log( '--- Transition Comment Status ---' );
+		// error_log( 'post_id: ' . $post_id );
 
 		if( $post_id = intval( $post_id ) ) {
             $this->update_post( $post_id );
@@ -154,20 +132,20 @@ class CDN_Integration {
 		if( !$user_id ) {
 			return;
 		}
-		error_log( '--- Deleted User ---' );
+		// error_log( '--- Deleted User ---' );
 		$url = get_author_posts_url( $user_id );
-		error_log( 'Author URL: ' . $url );
+		// error_log( 'Author URL: ' . $url );
 	}
 
 	public function edit_terms( $term_id, $taxonomy ) {
-		error_log( '--- Edit Terms ---' );
+		// error_log( '--- Edit Terms ---' );
 		if( $url = get_term_link( $term_id, $taxonomy ) ) {
 			$this->flush_urls( $url );
 		}
 	}
 
 	public function pre_delete_term( $url = '' ) {
-		error_log( '--- Pre Delete Term ---' );
+		// error_log( '--- Pre Delete Term ---' );
 		if( $url ) {
 			$this->flush_urls( $url );
 		}
