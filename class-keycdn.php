@@ -48,9 +48,6 @@ function keycdn_flush_urls( $urls = array() ) {
 add_action( 'cdn_integration_flush_urls', 'keycdn_flush_urls' );
 
 function keycdn_wp() {
-    if( isset( $_SERVER['HTTP_X-PULL'] ) && $_SERVER['HTTP_X-PULL'] == 'KeyCDN' ) {
-        remove_action( 'template_redirect', 'redirect_canonical' );
-    }
     if( isset( $_SERVER['HTTP_X_PULL'] ) && $_SERVER['HTTP_X_PULL'] == 'KeyCDN' ) {
         remove_action( 'template_redirect', 'redirect_canonical' );
     }
