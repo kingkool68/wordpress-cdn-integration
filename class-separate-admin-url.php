@@ -1,6 +1,7 @@
 <?php
 class Separate_Admin_URL {
 
+	public $original_site_url = '';
 	public $site_path = '';
 	public $unmapped_domain = '';
 	public $unmapped_url = '';
@@ -155,9 +156,12 @@ class Separate_Admin_URL {
 		return $data;
 	}
 
-
-
 	public function plugins_loaded() {
+		$url = get_site_url();
+		$url = str_replace( 'https://', '', $url );
+		$url = str_replace( 'http://', '', $url );
+		$this->original_site_url = $url;
+
 		$options = $this->get_options();
 		$this->public_domain = $options['public-domain'];
 		$this->admin_domain = $options['admin-domain'];
@@ -172,10 +176,15 @@ class Separate_Admin_URL {
 			$this->is_admin_ssl = true;
 		}
 		$this->current_domain = $_SERVER['HTTP_HOST'];
-		$site_details = get_blog_details();
-		$this->unmapped_domain = $site_details->domain;
-		$this->site_path = untrailingslashit( $site_details->path );
-		$this->unmapped_url = $site_details->domain . untrailingslashit( $site_details->path );
+		if( is_multisite() ) {
+			$site_details = get_blog_details();
+			$this->unmapped_domain = $site_details->domain;
+			$this->site_path = untrailingslashit( $site_details->path );
+			$this->unmapped_url = $site_details->domain . untrailingslashit( $site_details->path );
+		} else {
+			$this->unmapped_domain == 'false';
+			$this->unmapped_url = $this->original_site_url;
+		}
 
 		if( strstr( $_SERVER['REQUEST_URI'], 'wp-login.php' ) ) {
 			$this->is_wp_login_request = true;
@@ -205,7 +214,7 @@ class Separate_Admin_URL {
 			die();
 		}
 
-		if( $this->current_domain == $this->admin_domain && !$this->is_admin_ajax_request && !$this->is_async_upload_request && strstr( $_SERVER['REQUEST_URI'], $this->site_path ) ) {
+		if( $this->current_domain == $this->admin_domain && !$this->is_admin_ajax_request && !$this->is_async_upload_request && $this->site_path && strstr( $_SERVER['REQUEST_URI'], $this->site_path ) ) {
 			$domain = 'http://' . $this->admin_domain;
 			if( $this->is_admin_ssl ) {
 				$domain = set_url_scheme( $domain, 'https' );
