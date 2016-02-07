@@ -51,5 +51,8 @@ function keycdn_wp() {
     if( isset( $_SERVER['HTTP_X-PULL'] ) && $_SERVER['HTTP_X-PULL'] == 'KeyCDN' ) {
         remove_action( 'template_redirect', 'redirect_canonical' );
     }
+    if( isset( $_SERVER['HTTP_X_PULL'] ) && $_SERVER['HTTP_X_PULL'] == 'KeyCDN' ) {
+        remove_action( 'template_redirect', 'redirect_canonical' );
+    }
 }
 add_action( 'wp', 'keycdn_wp' );
