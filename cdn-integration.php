@@ -3,7 +3,7 @@
  Plugin Name: CDN Integration
  Description: Run your entire site through a CDN.
  Author: kingkool68
- Version: 0.1.2
+ Version: 0.1.3
  Author URI: http://www.russellheimlich.com/
  */
 
