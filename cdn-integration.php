@@ -11,6 +11,8 @@ include 'class-separate-admin-url.php';
 if( is_admin() ) {
 	include 'class-cdn-integration.php';
 	include 'cdn-flush-dashboard-widget.php';
+} else {
+	include 'class-buffering.php';
 }
 
 $options = get_cdn_integration_options();
@@ -22,7 +24,7 @@ if( $cdn_provider && file_exists( $cdn_provider_include_file ) ) {
 }
 
 /**
- * Adds a Last-Modified header to the request based on the post modified timestamp 
+ * Adds a Last-Modified header to the request based on the post modified timestamp
  */
 function cdn_integration_add_last_modified_header() {
 	$post = get_post();
