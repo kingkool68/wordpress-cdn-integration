@@ -167,10 +167,26 @@ function keycdn_flush_urls( $urls = array() ) {
 }
 
 /**
+ * Helper conditional to determne if the request is coming from a KeyCDN edge server
+ * See https://www.keycdn.com/support/frequently-asked-questions/#request-header-edge-server
+ */
+function is_keycdn_request() {
+	return ( isset( $_SERVER['HTTP_X_PULL'] ) && $_SERVER['HTTP_X_PULL'] == 'KeyCDN' );
+}
+/**
+ * If the request is from KeyCDN then use output buffering so the page response can be cached
+ * @return bool Whether the request is from KeyCDN
+ */
+function keycdn_output_buffering() {
+	return is_keycdn_request();
+}
+add_filter( 'continue_cdn_integration_buffering', 'keycdn_output_buffering' );
+
+/**
  * If the request is coming from a KeyCDN edge server, remove the canonical redirect otherwise we'll have an endless redirect loop.
  */
 function keycdn_maybe_remove_canonical_redirect() {
-	if( isset( $_SERVER['HTTP_X_PULL'] ) && $_SERVER['HTTP_X_PULL'] == 'KeyCDN' ) {
+	if( is_keycdn_request() ) {
 		remove_action( 'template_redirect', 'redirect_canonical' );
 	}
 }
