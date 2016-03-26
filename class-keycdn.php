@@ -82,7 +82,7 @@ function keycdn_flush_tags( $tags = array() ) {
 		return;
 	}
 
-	if( !is_string( $tags ) ) {
+	if( is_string( $tags ) ) {
 		$tags = array( $tags );
 	}
 
