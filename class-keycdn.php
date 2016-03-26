@@ -70,6 +70,14 @@ function keycdn_flush_all() {
 	if( is_wp_error( $response ) ) {
 		error_log( 'KeyCDN Flush ALL Error: ' . $response->get_error_message() );
 	}
+
+	$output = array(
+		'url' => $request_url,
+		'args' => $args,
+		'response' => $response,
+	);
+
+	return $output;
 }
 
 /**
@@ -114,6 +122,14 @@ function keycdn_flush_tags( $tags = array() ) {
 	if( is_wp_error( $response ) ) {
 		error_log( 'KeyCDN Cache Tag Flush Error: ' . $response->get_error_message() );
 	}
+
+	$output = array(
+		'url' => $request_url,
+		'args' => $args,
+		'response' => $response,
+	);
+
+	return $output;
 }
 
 /**
@@ -157,13 +173,20 @@ function keycdn_flush_urls( $urls = array() ) {
 			'Content-Type' => 'application/json',
 		),
 		'body' => $payload,
-		'sslverify' => false,
 	);
 	$response = wp_remote_post( $request_url, $args );
 
 	if( is_wp_error( $response ) ) {
 		error_log( 'KeyCDN URL Flush Error: ' . $response->get_error_message() );
 	}
+
+	$output = array(
+		'url' => $request_url,
+		'args' => $args,
+		'response' => $response,
+	);
+
+	return $output;
 }
 
 /**
