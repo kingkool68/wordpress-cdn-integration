@@ -210,8 +210,8 @@ class Separate_Admin_URL {
 			}
 
 			$redirect_url = $domain . $this->get_request_uri();
-			wp_redirect( $redirect_url, 301 );
-			die();
+			# wp_redirect( $redirect_url, 301 );
+			# die();
 		}
 
 		if( $this->current_domain == $this->admin_domain && !$this->is_admin_ajax_request && !$this->is_async_upload_request && $this->site_path && strstr( $_SERVER['REQUEST_URI'], $this->site_path ) ) {
@@ -232,8 +232,8 @@ class Separate_Admin_URL {
 			}
 
 			$redirect_url = $domain . $this->get_request_uri();
-			wp_redirect( $redirect_url, 301 );
-			die();
+			# wp_redirect( $redirect_url, 301 );
+			# die();
 		}
 
 		if( $this->current_domain == $this->public_domain && $this->is_wp_login_request ) {
