@@ -314,6 +314,7 @@ class Separate_Admin_URL {
 	}
 
 	public function switch_admin_to_public( $url ) {
+		$url = str_replace( '://' . $this->current_domain, '://' . $this->public_domain, $url );
 		$url = str_replace( '://' . $this->unmapped_url, '://' . $this->public_domain, $url );
 		$url = str_replace( '://' . $this->admin_domain, '://' . $this->public_domain, $url );
 		$url = str_replace( $this->public_domain . $this->site_path, $this->public_domain, $url );
@@ -325,6 +326,7 @@ class Separate_Admin_URL {
 	}
 
 	public function switch_public_to_admin( $url ) {
+		$url = str_replace( '://' . $this->current_domain, '://' . $this->admin_domain, $url );
 		$url = str_replace( '://' . $this->unmapped_url, '://' . $this->admin_domain, $url );
 		$url = str_replace( '://' . $this->public_domain, '://' . $this->admin_domain, $url );
 		$url = str_replace( $this->admin_domain . $this->site_path, $this->admin_domain, $url );
