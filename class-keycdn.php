@@ -277,7 +277,7 @@ function keycdn_filter_wp_headers( $headers = array() ) {
 		foreach( $old_cache_control_values as $index => $val ) {
 			if(
 				stristr( $val, 'max-age' ) ||
-				stristr( $val, 's-max-age' ) ||
+				stristr( $val, 's-maxage' ) ||
 				stristr( $val, 'public' )
 			) {
 				unset( $old_cache_control_values[ $index ] );
@@ -286,7 +286,7 @@ function keycdn_filter_wp_headers( $headers = array() ) {
 	}
 
 	$old_cache_control_values[] = 'max-age=' . intval( $new_max_age_value );
-	$old_cache_control_values[] = 's-max-age=' . intval( $new_s_max_age_value );
+	$old_cache_control_values[] = 's-maxage=' . intval( $new_s_max_age_value );
 	$old_cache_control_values[] = 'public';
 	$headers['Cache-Control'] = implode( ', ', $old_cache_control_values );
 
