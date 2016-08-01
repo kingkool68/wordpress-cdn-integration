@@ -40,11 +40,12 @@ function cdn_integration_add_last_modified_header() {
 		}
 	}
 
-	// Clean up pre-existing headers
+	/* Clean up pre-existing headers
 	$current_headers = headers_list();
 	$supported_headers = array( 'Cache-Control', );
 	foreach( $supported_headers as $current_header ) {
 		header_remove( $current_header );
 	}
+	*/
 }
 add_action( 'wp', 'cdn_integration_add_last_modified_header' );
