@@ -251,7 +251,7 @@ add_action( 'wp', 'add_keycdn_cache_tags' );
  */
 function keycdn_filter_wp_headers( $headers = array() ) {
 	$old_cache_control_values = array();
-	$new_max_age_value = apply_filters( 'keycdn_max_age', 0 );
+	$new_max_age_value = apply_filters( 'keycdn_max_age', 10 );
 	$new_max_age_value = intval( $new_max_age_value );
 	$new_s_max_age_value = apply_filters( 'keycdn_s_max_age', DAY_IN_SECONDS );
 	$new_s_max_age_value = intval( $new_s_max_age_value );
