@@ -206,16 +206,6 @@ function keycdn_output_buffering() {
 add_filter( 'continue_cdn_integration_buffering', 'keycdn_output_buffering' );
 
 /**
- * If the request is coming from a KeyCDN edge server, remove the canonical redirect otherwise we'll have an endless redirect loop.
- */
-function keycdn_maybe_remove_canonical_redirect() {
-	if( is_keycdn_request() ) {
-		remove_action( 'template_redirect', 'redirect_canonical' );
-	}
-}
-add_action( 'wp', 'keycdn_maybe_remove_canonical_redirect' );
-
-/**
  * Adds the "Cache Tag" header to the request based on what kind of page is being served. This enables the flushing of specific subsets of pages in one go.
  */
 function add_keycdn_cache_tags() {
@@ -293,3 +283,39 @@ function keycdn_filter_wp_headers( $headers = array() ) {
 	return $headers;
 }
 add_filter( 'wp_headers', 'keycdn_filter_wp_headers' );
+
+/**
+ * Compare paths of the request and determine if we need to redirect
+ * @param  string $redirect_url Proposed URL to redirect to
+ * @param  string $request_url  The Requested URL
+ * @return string/bool           The URL to redirect to or false if no redirect should occur
+ */
+function keycdn_maybe_do_canonical_redirect( $redirect_url = '', $request_url = '' ) {
+	if( !is_keycdn_request() ) {
+		return $redirect_url;
+	}
+	$parts = parse_url( $redirect_url );
+	$redirect_path = '';
+	if ( isset( $parts['path'] ) && ! empty( $parts['path'] ) ) {
+		$redirect_path .= $parts['path'];
+	}
+	if ( isset( $parts['query'] ) && ! empty( $parts['query'] ) ) {
+		$redirect_path .= '?' . $parts['query'];
+	}
+
+	$parts = parse_url( $request_url );
+	$request_path = '';
+	if ( isset( $parts['path'] ) && ! empty( $parts['path'] ) ) {
+		$request_path .= $parts['path'];
+	}
+	if ( isset( $parts['query'] ) && ! empty( $parts['query'] ) ) {
+		$request_path .= '?' . $parts['query'];
+	}
+
+	if ( $redirect_path == $request_path ) {
+		return false;
+	}
+
+	return $redirect_url;
+}
+add_filter( 'redirect_canonical', 'keycdn_maybe_do_canonical_redirect', 10, 2 );
