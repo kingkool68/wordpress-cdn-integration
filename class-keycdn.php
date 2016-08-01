@@ -242,3 +242,54 @@ function add_keycdn_cache_tags() {
 	}
 }
 add_action( 'wp', 'add_keycdn_cache_tags' );
+
+/**
+ * Modify the HTTP headers WordPress sends for a page request.
+ * Allows us to specify caching headers for KeyCDN.
+ * @param  array $headers The headers we will modify
+ * @return array          The modified headers
+ */
+function keycdn_filter_wp_headers( $headers = array() ) {
+	$old_cache_control_values = array();
+	$new_max_age_value = apply_filters( 'keycdn_max_age', 0 );
+	$new_max_age_value = intval( $new_max_age_value );
+	$new_s_max_age_value = apply_filters( 'keycdn_s_max_age', DAY_IN_SECONDS );
+	$new_s_max_age_value = intval( $new_s_max_age_value );
+
+	// Provide an opportunity to prevent adding Cache-Control headers
+	if( $new_max_age_value == -1 || $new_s_max_age_value == -1 ) {
+		return $headers;
+	}
+
+	if( isset( $headers['Cache-Control'] ) ) {
+		$old_cache_control = $headers['Cache-Control'];
+		$old_cache_control_values = explode( ',', $old_cache_control );
+		$old_cache_control_values = array_map( 'trim', $old_cache_control_values );
+
+		// If the response is supposed to not be cached then bail
+		if(
+			in_array( 'no-cache', $old_cache_control_values ) ||
+			in_array( 'max-age=0', $old_cache_control_values )
+		) {
+			return $headers;
+		}
+
+		foreach( $old_cache_control_values as $index => $val ) {
+			if(
+				stristr( $val, 'max-age' ) ||
+				stristr( $val, 's-max-age' ) ||
+				stristr( $val, 'public' )
+			) {
+				unset( $old_cache_control_values[ $index ] );
+			}
+		}
+	}
+
+	$old_cache_control_values[] = 'max-age=' . intval( $new_max_age_value );
+	$old_cache_control_values[] = 's-max-age=' . intval( $new_s_max_age_value );
+	$old_cache_control_values[] = 'public';
+	$headers['Cache-Control'] = implode( ', ', $old_cache_control_values );
+
+	return $headers;
+}
+add_filter( 'wp_headers', 'keycdn_filter_wp_headers' );
