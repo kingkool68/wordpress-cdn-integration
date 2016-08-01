@@ -206,16 +206,6 @@ function keycdn_output_buffering() {
 add_filter( 'continue_cdn_integration_buffering', 'keycdn_output_buffering' );
 
 /**
- * If the request is coming from a KeyCDN edge server, remove the canonical redirect otherwise we'll have an endless redirect loop.
- */
-function keycdn_maybe_remove_canonical_redirect() {
-	if( is_keycdn_request() ) {
-		remove_action( 'template_redirect', 'redirect_canonical' );
-	}
-}
-// add_action( 'wp', 'keycdn_maybe_remove_canonical_redirect' );
-
-/**
  * Adds the "Cache Tag" header to the request based on what kind of page is being served. This enables the flushing of specific subsets of pages in one go.
  */
 function add_keycdn_cache_tags() {
